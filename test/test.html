@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单元测试 - 校园失物招领</title>
+  <style>
+    body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f2f3f5; margin: 0; padding: 24px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 20px; color: #2b2f36; }
+    .summary { background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 10px rgba(0,0,0,.06); margin: 14px 0; }
+    .summary b { font-size: 18px; }
+    .pass-num { color: #34c77b; }
+    .fail-num { color: #f56c6c; }
+    .summary.pass { border-left: 4px solid #34c77b; }
+    .summary.fail { border-left: 4px solid #f56c6c; }
+    ul { list-style: none; padding: 0; }
+    li { background: #fff; border-radius: 8px; padding: 8px 14px; margin-bottom: 6px; font-size: 13.5px; box-shadow: 0 1px 4px rgba(0,0,0,.04); display: flex; align-items: center; gap: 8px; }
+    .badge { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; flex-shrink: 0; }
+    .badge.p { background: #34c77b; }
+    .badge.f { background: #f56c6c; }
+    .msg { color: #f56c6c; font-size: 12px; margin-left: auto; text-align: right; max-width: 50%; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>校园失物招领 · 单元测试</h1>
+    <div id="summary" class="summary">运行中…</div>
+    <ul id="results"></ul>
+  </div>
+
+  <!-- 加载被测模块 -->
+  <script src="../js/data.js"></script>
+  <script src="../js/core.js"></script>
+  <!-- 测试用例 -->
+  <script src="test.js"></script>
+</body>
+</html>
