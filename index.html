@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园失物招领</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app" class="app">
+
+    <!-- ===== 首页 ===== -->
+    <section id="view-home" class="view">
+      <header class="page-header">
+        <h1 class="page-title">校园失物招领</h1>
+      </header>
+      <!-- 搜索入口 -->
+      <div class="search-bar" id="home-search">
+        <span class="search-icon">🔍</span>
+        <span class="search-placeholder">搜索物品名称，如"校园卡""水杯"</span>
+      </div>
+      <!-- 类型 Tab -->
+      <div class="tabs" id="home-tabs">
+        <button class="tab active" data-type="all">全部</button>
+        <button class="tab" data-type="lost">寻物启事</button>
+        <button class="tab" data-type="found">招领启事</button>
+      </div>
+      <!-- 信息列表 -->
+      <div id="home-list" class="card-list"></div>
+      <div id="home-empty" class="empty hidden">
+        <div class="empty-icon">🫥</div>
+        <p>暂时没有相关信息</p>
+      </div>
+    </section>
+
+    <!-- ===== 发布信息页 ===== -->
+    <section id="view-publish" class="view hidden">
+      <header class="page-header">
+        <h1 class="page-title">发布信息</h1>
+      </header>
+      <form id="publish-form" novalidate>
+        <!-- 类型选择 -->
+        <div class="publish-type" id="publish-type">
+          <button type="button" class="type-btn active" data-type="lost">
+            <span class="type-emoji">😢</span>
+            <span>我丢了东西</span>
+            <small>（寻物）</small>
+          </button>
+          <button type="button" class="type-btn" data-type="found">
+            <span class="type-emoji">🤝</span>
+            <span>我捡到了东西</span>
+            <small>（招领）</small>
+          </button>
+        </div>
+        <p class="publish-tip" id="publish-tip">填写丢失物品信息，发布后可在"我的发布"中查看。</p>
+
+        <div class="form-group">
+          <label class="form-label">* 物品名称</label>
+          <input type="text" id="f-name" class="form-input" maxlength="30" placeholder="如：蓝色校园卡">
+          <p class="form-error hidden" data-for="name"></p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">物品分类</label>
+          <select id="f-category" class="form-input"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">* 遗失/拾获地点</label>
+          <input type="text" id="f-location" class="form-input" maxlength="50" placeholder="如：第三教学楼302教室">
+          <p class="form-error hidden" data-for="location"></p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">* 遗失/拾获时间</label>
+          <input type="datetime-local" id="f-time" class="form-input">
+          <p class="form-error hidden" data-for="time"></p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">物品描述</label>
+          <textarea id="f-description" class="form-input form-textarea" maxlength="500" rows="4" placeholder="描述物品的外观、特征、标识等"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">物品照片（选填）</label>
+          <div class="photo-upload" id="photo-upload">
+            <input type="file" id="f-photo" accept="image/*" hidden>
+            <div class="photo-placeholder" id="photo-placeholder">
+              <span class="photo-icon">📷</span>
+              <span>上传照片</span>
+            </div>
+          </div>
+          <p class="photo-hint">支持 jpg / png 格式，照片将自动压缩保存</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">* 联系方式</label>
+          <input type="text" id="f-contact" class="form-input" maxlength="50" placeholder="微信号，如：wzx_2024">
+          <p class="form-error hidden" data-for="contact"></p>
+        </div>
+
+        <button type="submit" class="btn-primary btn-publish">立即发布</button>
+      </form>
+    </section>
+
+    <!-- ===== 搜索页 ===== -->
+    <section id="view-search" class="view hidden">
+      <header class="page-header">
+        <button class="back-btn" id="search-back" aria-label="返回">‹</button>
+        <div class="search-bar search-bar-input">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="搜索物品名称、地点…">
+          <button class="search-clear hidden" id="search-clear">✕</button>
+        </div>
+      </header>
+
+      <div id="search-panel" class="search-panel">
+        <p class="panel-title">热门搜索</p>
+        <div class="hot-tags" id="hot-tags"></div>
+        <p class="panel-title">分类筛选</p>
+        <div class="cat-tags" id="cat-tags"></div>
+      </div>
+
+      <div id="search-result" class="search-result hidden">
+        <p class="result-info" id="result-info"></p>
+        <div id="search-list" class="card-list"></div>
+      </div>
+      <div id="search-empty" class="empty hidden">
+        <div class="empty-icon">🔍</div>
+        <p>没有找到相关信息</p>
+        <p class="empty-sub">换个关键词试试吧</p>
+      </div>
+    </section>
+
+    <!-- ===== 详情页 ===== -->
+    <section id="view-detail" class="view hidden">
+      <header class="page-header">
+        <button class="back-btn" id="detail-back" aria-label="返回">‹</button>
+        <h1 class="page-title">信息详情</h1>
+        <button class="share-btn" id="detail-share" aria-label="分享">↗</button>
+      </header>
+      <div id="detail-body"></div>
+    </section>
+
+    <!-- ===== 我的发布 ===== -->
+    <section id="view-mine" class="view hidden">
+      <header class="page-header">
+        <h1 class="page-title">我的发布</h1>
+      </header>
+      <div class="tabs" id="mine-tabs">
+        <button class="tab active" data-type="lost">我发布的寻物</button>
+        <button class="tab" data-type="found">我发布的招领</button>
+      </div>
+      <p class="mine-count" id="mine-count"></p>
+      <div id="mine-list" class="card-list"></div>
+      <div id="mine-empty" class="empty hidden">
+        <div class="empty-icon">📭</div>
+        <p>还没有发布记录</p>
+        <button class="btn-primary btn-empty" id="mine-publish-btn">去发布一条</button>
+      </div>
+    </section>
+
+    <!-- ===== 底部导航 ===== -->
+    <nav class="tabbar">
+      <button class="tabbar-item active" data-nav="home">
+        <span class="tabbar-icon">🏠</span>
+        <span>首页</span>
+      </button>
+      <button class="tabbar-item tabbar-publish" data-nav="publish">
+        <span class="tabbar-plus">＋</span>
+      </button>
+      <button class="tabbar-item" data-nav="mine">
+        <span class="tabbar-icon">👤</span>
+        <span>我的</span>
+      </button>
+    </nav>
+
+    <!-- ===== 发布成功弹窗 ===== -->
+    <div class="modal hidden" id="success-modal">
+      <div class="modal-body">
+        <div class="modal-icon">✓</div>
+        <p class="modal-title">发布成功</p>
+        <p class="modal-sub">发布成功，可在"我的"中查看</p>
+        <button class="btn-primary btn-modal" id="modal-goto-mine">查看我的发布</button>
+        <button class="btn-text" id="modal-close">关闭</button>
+      </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
