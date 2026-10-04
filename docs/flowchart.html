@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>校园失物招领 · 数据流与核心流程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f2f3f5; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; padding: 12px; color: #2b2f36; }
+  .canvas { width: 800px; margin: 0 auto; }
+  h2 { text-align: center; font-size: 22px; margin: 10px 0 24px; color: #1b6ef3; }
+  h3 { font-size: 16px; margin: 34px 0 14px; color: #444; }
+  .legend { font-size: 12px; color: #777; text-align: center; margin-bottom: 16px; }
+  /* 数据流图 */
+  .arch { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+  .layer { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .node {
+    background: #fff; border: 2px solid #1b6ef3; border-radius: 10px;
+    padding: 12px 18px; text-align: center; min-width: 150px;
+    box-shadow: 0 2px 8px rgba(31,60,99,.08);
+  }
+  .node.dark { background: #1b6ef3; color: #fff; border-color: #1b6ef3; }
+  .node.green { border-color: #34c77b; }
+  .node.orange { border-color: #ff8f1f; }
+  .node .t { font-size: 14px; font-weight: 600; }
+  .node .s { font-size: 11.5px; opacity: .75; margin-top: 3px; }
+  .arrow-line { font-size: 26px; color: #8a9099; line-height: 1; }
+  .layer-label { font-size: 12px; color: #999; text-align: center; }
+  .flow-box {
+    background: #fff; border: 1.5px solid #dde3ea; border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(31,60,99,.05);
+  }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .step {
+    background: #eaf2fe; border: 1.5px solid #1b6ef3; color: #1b6ef3;
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 500;
+  }
+  .step.green { background: #e8f9f0; border-color: #34c77b; color: #1d8a54; }
+  .step.orange { background: #fff3e6; border-color: #ff8f1f; color: #d96c00; }
+  .step.gray { background: #f0f1f3; border-color: #c3c8d0; color: #6b7280; }
+  .step.decision { border-radius: 50% 50% 8px 8px; }
+  .arrow { color: #8a9099; font-size: 18px; }
+  .flow-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #444; }
+  .flow-title .no { color: #1b6ef3; }
+  .note { font-size: 12px; color: #888; margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <h2>校园失物招领 · 系统数据流图</h2>
+  <p class="legend">数据存储于浏览器 localStorage，无后端服务器；状态变更后各页面统一从数据层重渲染，保证结果同步</p>
+  <div class="arch">
+    <div class="layer">
+      <div class="node dark"><div class="t">用户</div><div class="s">失主 / 拾获者</div></div>
+    </div>
+    <div class="arrow-line">▼</div>
+    <div class="layer">
+      <div class="node"><div class="t">视图层 View</div><div class="s">首页 · 发布 · 搜索 · 详情 · 我的发布<br>（index.html + style.css）</div></div>
+    </div>
+    <div class="arrow-line">▼</div>
+    <div class="layer">
+      <div class="node"><div class="t">交互层 Controller</div><div class="s">app.js：hash 路由、事件绑定、渲染</div></div>
+    </div>
+    <div class="arrow-line">▼</div>
+    <div class="layer">
+      <div class="node green"><div class="t">业务逻辑层 Model</div><div class="s">core.js：表单校验 / 关键词搜索 / 分类筛选 / 状态标记 / 统计（纯函数）</div></div>
+    </div>
+    <div class="arrow-line">▼</div>
+    <div class="layer">
+      <div class="node orange"><div class="t">数据层 Storage</div><div class="s">data.js：示例数据 seed + localStorage 读写持久化</div></div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:40px;">核心业务流程</h2>
+
+  <div class="flow-box">
+    <div class="flow-title"><span class="no">流程一</span> 发布信息（失主 / 拾获者共用）</div>
+    <div class="flow">
+      <div class="step">点击底部「＋」</div><span class="arrow">→</span>
+      <div class="step">选择 寻物 / 招领</div><span class="arrow">→</span>
+      <div class="step gray decision">填写名称·地点·时间·联系方式·照片（选填）</div><span class="arrow">→</span>
+      <div class="step orange decision">表单校验</div><span class="arrow">→</span>
+      <div class="step gray decision">通过？</div><span class="arrow">→</span>
+      <div class="step green">存入 localStorage</div><span class="arrow">→</span>
+      <div class="step green">发布成功弹窗</div><span class="arrow">→</span>
+      <div class="step">「我的发布」可查看</div>
+    </div>
+    <div class="note">校验不通过时，逐字段显示红色错误提示并 toast 提醒；必填项：类型、名称、地点、时间、联系方式。</div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-title"><span class="no">流程二</span> 浏览与搜索（失主视角）</div>
+    <div class="flow">
+      <div class="step">进入首页</div><span class="arrow">→</span>
+      <div class="step gray decision">全部 / 寻物 / 招领 Tab</div><span class="arrow">→</span>
+      <div class="step gray decision">搜索框输入关键词 / 热门标签 / 分类筛选</div><span class="arrow">→</span>
+      <div class="step orange decision">core.searchItems 过滤</div><span class="arrow">→</span>
+      <div class="step gray decision">有结果？</div><span class="arrow">→</span>
+      <div class="step green">列表展示 + 结果计数</div><span class="arrow">→</span>
+      <div class="step">点击卡片 → 详情页</div><span class="arrow">→</span>
+      <div class="step green">复制微信号联系</div>
+    </div>
+    <div class="note">无结果时显示「没有找到相关信息，换个关键词试试吧」；已解决的信息在列表中置灰并标注「已找回 / 已归还」。</div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-title"><span class="no">流程三</span> 更新信息状态（发布者）</div>
+    <div class="flow">
+      <div class="step">「我的发布」选中记录</div><span class="arrow">→</span>
+      <div class="step orange decision">点击「标记已找回 / 已归还」</div><span class="arrow">→</span>
+      <div class="step gray decision">确认框</div><span class="arrow">→</span>
+      <div class="step green">core.markResolved 更新状态</div><span class="arrow">→</span>
+      <div class="step green">写入 localStorage</div><span class="arrow">→</span>
+      <div class="step green">首页 / 搜索 / 详情同步显示「已找回 / 已归还」</div>
+    </div>
+    <div class="note">状态标记为幂等操作（重复标记不产生变更）；纯函数返回新数组，不修改原数据，便于单元测试与回归。</div>
+  </div>
+</div>
+</body>
+</html>
